@@ -63,7 +63,6 @@ class SongService {
       text: 'UPDATE songs SET title = $2, year = $3, performer = $4, genre = $5, duration = $6, album_id = $7 WHERE id = $1 RETURNING id',
       values: [id, title, year, performer, genre, duration, albumId],
     };
-    console.log(this._pool.query(query));
 
     const result = await this._pool.query(query);
 

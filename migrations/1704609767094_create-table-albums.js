@@ -17,8 +17,13 @@ exports.up = (pgm) => {
       notNull: true,
     },
   });
+
+  // membuat user baru.
+  pgm.sql("INSERT INTO albums(id, name, year) VALUES ('album-', '-', 0000)");
 };
 
 exports.down = (pgm) => {
   pgm.dropTable('albums');
+  // delete user baru.
+  pgm.sql("DELETE FROM albums WHERE id = 'album-'");
 };
