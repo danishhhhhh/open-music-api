@@ -38,10 +38,6 @@ class PlaylistService {
 
     const result = await this._pool.query(query);
 
-    if (!result.rowCount) {
-      throw new NotFoundError('Playlist tidak ditemukan');
-    }
-
     return result.rows;
   }
 
@@ -121,10 +117,10 @@ class PlaylistService {
     return playlist.rows[0];
   }
 
-  async deleteSongInPlaylistById({ id, songId, userId }) {
+  async deleteSongInPlaylistById({ playlistId, songId, userId }) {
     const query = {
       text: 'DELETE FROM playlists_songs WHERE playlist_id = $1 AND song_id = $2 RETURNING id',
-      values: [id, songId],
+      values: [playlistId, songId],
     };
 
     const result = await this._pool.query(query);
@@ -134,12 +130,12 @@ class PlaylistService {
     }
 
     if (userId) {
-      const action = 'add';
+      const action = 'delete';
       const currentTime = new Date();
       const time = currentTime.toISOString();
 
       await this.addActivities({
-        playlistId: id, songId, userId, time, action,
+        playlistId, songId, userId, time, action,
       });
     }
   }
@@ -185,8 +181,6 @@ class PlaylistService {
       values: [id, playlistId, songId, userId, action, time],
     };
 
-    console.log(userId);
-
     const result = await this._pool.query(query);
 
     if (!result.rows[0].id) {
@@ -198,9 +192,9 @@ class PlaylistService {
 
   async getActivities(id) {
     const query = {
-      text: `SELECT users.username, playlists.name, playlist_song_activities.action, playlist_song_activities.time FROM playlist_song_activities
+      text: `SELECT users.username, songs.title, playlist_song_activities.action, playlist_song_activities.time FROM playlist_song_activities
     LEFT JOIN users ON users.id = playlist_song_activities.user_id
-    LEFT JOIN playlists ON playlists.id = playlist_song_activities.playlist_id
+    LEFT JOIN songs ON songs.id = playlist_song_activities.song_id
     WHERE playlist_song_activities.playlist_id = $1`,
       values: [id],
     };

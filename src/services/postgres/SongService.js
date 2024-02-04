@@ -5,13 +5,15 @@ const NotFoundError = require('../../exceptions/NotFoundError');
 const { mapDBSongsToModel } = require('../../utils/index');
 
 class SongService {
-  constructor() {
+  constructor(albumService) {
     this._pool = new Pool();
+    this._albumService = albumService;
   }
 
   async addSong({
     title, year, performer, genre, duration, albumId,
   }) {
+    await this._albumService.addDefaultAlbum();
     const id = `song-${nanoid(16)}`;
     const query = {
       text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id',

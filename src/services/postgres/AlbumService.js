@@ -72,6 +72,30 @@ class AlbumService {
       throw new NotFoundError('Album gagal dihapus. Id tidak ditemukan');
     }
   }
+
+  async addDefaultAlbum() {
+    const checkQuery = {
+      text: 'SELECT id FROM albums WHERE id = $1',
+      values: ['album-'],
+    };
+
+    const checkResult = await this._pool.query(checkQuery);
+
+    if (checkResult.rows.length > 0) {
+      return;
+    }
+
+    const insertQuery = {
+      text: 'INSERT INTO albums VALUES($1, $2, $3) RETURNING id',
+      values: ['album-', 'album-', 2007],
+    };
+
+    const result = await this._pool.query(insertQuery);
+
+    if (!result.rows[0].id) {
+      throw new InvariantError('Album gagal ditambahkan');
+    }
+  }
 }
 
 module.exports = AlbumService;
