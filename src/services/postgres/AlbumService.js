@@ -12,8 +12,8 @@ class AlbumService {
     const id = `album-${nanoid(16)}`;
 
     const query = {
-      text: 'INSERT INTO albums VALUES($1, $2, $3) RETURNING id',
-      values: [id, name, year],
+      text: 'INSERT INTO albums VALUES($1, $2, $3, $4) RETURNING id',
+      values: [id, name, year, ''],
     };
 
     const result = await this._pool.query(query);
@@ -86,8 +86,8 @@ class AlbumService {
     }
 
     const insertQuery = {
-      text: 'INSERT INTO albums VALUES($1, $2, $3) RETURNING id',
-      values: ['album-', 'album-', 2007],
+      text: 'INSERT INTO albums VALUES($1, $2, $3, $4) RETURNING id',
+      values: ['album-', 'album-', 2007, ''],
     };
 
     const result = await this._pool.query(insertQuery);
