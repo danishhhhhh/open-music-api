@@ -10,7 +10,6 @@ const AlbumsValidator = {
   },
 
   validateCoverHeaders: (headers) => {
-    console.log('woi mana kok ga kluar astaga');
     const validationResult = CoverHeadersSchema.validate(headers);
 
     if (validationResult.error) {

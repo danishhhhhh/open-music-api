@@ -46,7 +46,6 @@ class AlbumService {
     }
 
     result.rows[0].songs = song.rows;
-    console.log(result.rows.map(mapDBAlbumsToModel)[0]);
     return result.rows.map(mapDBAlbumsToModel)[0];
   }
 
