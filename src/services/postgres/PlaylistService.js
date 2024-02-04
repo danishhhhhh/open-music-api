@@ -135,7 +135,7 @@ class PlaylistService {
       const time = currentTime.toISOString();
 
       await this.addActivities({
-        playlistId, songId, userId, time, action,
+        playlistId, songId, userId, action, time,
       });
     }
   }

@@ -37,13 +37,20 @@ const collaborations = require('./api/collaborations');
 const CollaborationsService = require('./services/postgres/CollaborationService');
 const CollaborationsValidator = require('./validator/collaborations');
 
-// Exports
+// exports
 const _exports = require('./api/exports');
 const ProducerService = require('./services/rabbitmq/ProducerService');
 const ExportsValidator = require('./validator/exports');
 
 // storage
 const StorageService = require('./services/storage/StorageService');
+
+// cache
+const CacheService = require('./services/redis/CacheService');
+
+// likes
+const likes = require('./api/likes');
+const LikesService = require('./services/postgres/LikesService');
 
 const init = async () => {
   const storageService = new StorageService(path.resolve(__dirname, 'api/albums/file/images'));
@@ -53,6 +60,8 @@ const init = async () => {
   const authenticationsService = new AuthenticationsService();
   const collaborationsService = new CollaborationsService();
   const playlistService = new PlaylistService(collaborationsService);
+  const cacheService = new CacheService();
+  const likesService = new LikesService(cacheService);
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -141,6 +150,12 @@ const init = async () => {
         service: ProducerService,
         playlistService,
         validator: ExportsValidator,
+      },
+    },
+    {
+      plugin: likes,
+      options: {
+        service: likesService,
       },
     },
   ]);
