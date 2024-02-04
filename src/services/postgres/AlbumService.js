@@ -2,18 +2,20 @@ const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantError');
 const NotFoundError = require('../../exceptions/NotFoundError');
+const {mapDBAlbumsToModel} = require("../../utils");
 
 class AlbumService {
-  constructor() {
+  constructor(storageService) {
     this._pool = new Pool();
+    this._storageService = storageService;
   }
 
   async addAlbum({ name, year }) {
     const id = `album-${nanoid(16)}`;
 
     const query = {
-      text: 'INSERT INTO albums VALUES($1, $2, $3, $4) RETURNING id',
-      values: [id, name, year, ''],
+      text: 'INSERT INTO albums VALUES($1, $2, $3) RETURNING id',
+      values: [id, name, year],
     };
 
     const result = await this._pool.query(query);
@@ -44,7 +46,8 @@ class AlbumService {
     }
 
     result.rows[0].songs = song.rows;
-    return result.rows[0];
+    console.log(result.rows.map(mapDBAlbumsToModel)[0]);
+    return result.rows.map(mapDBAlbumsToModel)[0];
   }
 
   async editAlbumById(id, { name, year }) {
@@ -73,6 +76,10 @@ class AlbumService {
     }
   }
 
+  async addAlbumCoverById(file, meta, albumId) {
+    this._storageService.writeFile(file, meta, albumId);
+  }
+
   async addDefaultAlbum() {
     const checkQuery = {
       text: 'SELECT id FROM albums WHERE id = $1',
@@ -86,8 +93,8 @@ class AlbumService {
     }
 
     const insertQuery = {
-      text: 'INSERT INTO albums VALUES($1, $2, $3, $4) RETURNING id',
-      values: ['album-', 'album-', 2007, ''],
+      text: 'INSERT INTO albums VALUES($1, $2, $3) RETURNING id',
+      values: ['album-', 'album-', 2007],
     };
 
     const result = await this._pool.query(insertQuery);

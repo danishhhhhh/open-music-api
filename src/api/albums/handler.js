@@ -56,6 +56,21 @@ class AlbumsHandler {
       message: 'Album berhasil dihapus',
     };
   }
+
+  async postCoverAlbumByIdHandler(request, h) {
+    const { cover } = request.payload;
+    const { id } = request.params;
+    this._validator.validateCoverHeaders(cover.hapi.headers);
+
+    await this._service.addAlbumCoverById(cover, cover.hapi, id);
+
+    const response = h.response({
+      status: 'success',
+      message: 'Sampul berhasil diunggah',
+    });
+    response.code(201);
+    return response;
+  }
 }
 
 module.exports = AlbumsHandler;

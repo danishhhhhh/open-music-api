@@ -4,14 +4,13 @@ exports.shorthands = undefined;
 
 exports.up = (pgm) => {
   pgm.addColumns('albums', {
-    cover: {
+    cover_url: {
       type: 'TEXT',
-      notNull: true,
     },
   });
 };
 
 exports.down = (pgm) => {
-  pgm.dropColumn('albums', ['cover'],
+  pgm.dropColumn('albums', ['cover_url'],
   );
 };
